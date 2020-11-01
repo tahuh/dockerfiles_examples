@@ -1,0 +1,32 @@
+FROM ubuntu:16.04
+
+MAINTAINER Thomas Sunghoon Heo
+
+# Set-up environment required for installtion steps
+ENV PATH /usr/local/bin:$PATH
+ENV LANG C.UTF-8
+
+# Set-up work directory
+WORKDIR /bwawd
+# Now copy all the things in here to bwawd
+COPY . /bwawd
+# Now update APT
+RUN apt-get update
+RUN apt-get install -y software-properties-common
+RUN apt-get update
+
+# We need some tools to compile BWA
+# including external libraries
+
+RUN DEBIAN_FRONTEND=noninteractive; \
+apt install -y build-essential \
+autoconf automake perl \
+zlib1g-dev libbz2-dev \
+liblzma-dev libcurl4-gnutls-dev \
+libssl-dev libncurses5-dev git
+
+# Installation following github instruction
+
+RUN cd /bwawd/bwa && make
+RUN ln -s /bwawd/bwa/bwa /usr/local/bin/bwa 
+
